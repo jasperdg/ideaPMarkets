@@ -116,6 +116,10 @@ contract Market is DelegationTarget, ITyped, Initializable, Ownable, IMarket {
     return "Market";
   }
 
+  function isFinalized() public view returns (bool) {
+    return endTime <= controller.getTimestamp();
+  }
+
   function isResolved() public view returns (bool) {
     return getResolutionTime() != 0;
   }
