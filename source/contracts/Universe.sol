@@ -46,9 +46,9 @@ contract Universe is DelegationTarget, Initializable, ITyped, IUniverse {
     return denominationToken;
   }
 
-  function createYesNoMarket(uint256 _endTime, uint256 _feeDivisor, ERC20 _denominationToken, address _oracle, bytes32 _topic, string _description, string _extraInfo) public onlyInGoodTimes returns (IMarket _newMarket) {
+  function createYesNoMarket( address _ideaMarket, uint256 _metricUpperBound, uint256 _endTime, uint256 _feeDivisor, ERC20 _denominationToken, address _oracle, bytes32 _topic, string _description, string _extraInfo) public onlyInGoodTimes returns (IMarket _newMarket) {
     require(bytes(_description).length > 0, "Description is empty");
-    _newMarket = createMarketInternal(_endTime, _feeDivisor, _denominationToken, _oracle, msg.sender, 2, 10000);
+    _newMarket = createMarketInternal(_endTime, _feeDivisor, _denominationToken, _oracle, msg.sender, 2, 10000), _ideaMarket, _metricUpperBound);
     controller.getAugurLite().logMarketCreated(_topic, _description, _extraInfo, this, _newMarket, msg.sender, 0, 1 ether, IMarket.MarketType.YES_NO);
     return _newMarket;
   }
@@ -69,9 +69,9 @@ contract Universe is DelegationTarget, Initializable, ITyped, IUniverse {
     return _newMarket;
   }
 
-  function createMarketInternal(uint256 _endTime, uint256 _feeDivisor, ERC20 _denominationToken, address _oracle, address _sender, uint256 _numOutcomes, uint256 _numTicks) private onlyInGoodTimes returns (IMarket _newMarket) {
+  function createMarketInternal(uint256 _endTime, uint256 _feeDivisor, ERC20 _denominationToken, address _oracle, address _sender, uint256 _numOutcomes, uint256 _numTicks, uint256 _metricUpperBound, address _ideaMarket) private onlyInGoodTimes returns (IMarket _newMarket) {
     MarketFactory _marketFactory = MarketFactory(controller.lookup("MarketFactory"));
-    _newMarket = _marketFactory.createMarket(controller, this, _endTime, _feeDivisor, _denominationToken, _oracle, _sender, _numOutcomes, _numTicks);
+    _newMarket = _marketFactory.createMarket(controller, this, _endTime, uint256 _metricUpperBound, address _ideaMarket, _feeDivisor, _denominationToken, _oracle, _sender, _numOutcomes, _numTicks);
     markets[address(_newMarket)] = true;
     return _newMarket;
   }
